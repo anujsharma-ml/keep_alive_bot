@@ -20,26 +20,23 @@ try:
     print("App khul raha hai...")
     driver.get(STREAMLIT_URL)
     
-    wait = WebDriverWait(driver, 15)
+    # Streamlit cold start ke liye lamba wait (45 seconds)
+    print("App ke fully load hone ka wait kiya ja raha hai (45s max)...")
+    wait = WebDriverWait(driver, 45)
     
-    # Step 1: Check karein ki kya Streamlit ka 'Wake up' / Sleep screen aaya hai
+    # Step 1: Pehle check karein ki kya koi 'Wake up' button hai
     try:
-        print("Checking for Streamlit sleep/wake-up screen...")
-        # Streamlit sleep page par 'Yes, get this app back up!' ya similar button hota hai
-        wake_up_button = WebDriverWait(driver, 6).until(
+        wake_up_button = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'back up') or contains(., 'Wake up') or contains(., 'Yes')]"))
         )
-        print("App sleep mode me tha, wake-up button click kiya ja raha hai...")
+        print("Wake-up button mil gaya, click kiya ja raha hai...")
         wake_up_button.click()
-        
-        # App ke poori tarah uthne ke liye thoda wait karein
-        print("App ke wake up hone ka wait ho raha hai...")
-        time.sleep(15)
+        time.sleep(15) # Wake up hone ke baad extra wait
     except Exception:
-        print("Koi sleep screen nahi mili, app already active ho sakta hai.")
+        print("Koi wake-up button nahi mila, aage badh rahe hain.")
 
-    # Step 2: Ab chat input box ke load hone ka wait karein
-    print("Chat input box ke load hone ka wait kiya ja raha hai...")
+    # Step 2: Chat input box ke render hone ka wait karein
+    print("Chat input box ko dhoonda ja raha hai...")
     input_box = wait.until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-testid="stChatInput"] textarea'))
     )
@@ -49,11 +46,16 @@ try:
     input_box.send_keys("Hello")
     input_box.send_keys(Keys.RETURN)
 
-    time.sleep(8)
-    print("Activity successful! App active rahega.")
+    # Response process hone ke liye wait
+    time.sleep(10)
+    print("Activity successful! App active ho gaya hai.")
 
 except Exception as e:
     print(f"Error aa gaya: {e}")
+    # Debugging ke liye screenshot save kar lein taaki GitHub Actions me dikh sake
+    driver.save_screenshot("streamlit_error.png")
+    print("Screenshot 'streamlit_error.png' save kar diya gaya hai.")
+    raise e
 
 finally:
     driver.quit()
