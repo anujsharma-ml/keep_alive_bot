@@ -2,7 +2,6 @@ name: Keep Streamlit Alive
 
 on:
   schedule:
-    # Yeh har 20 minute mein chalega
     - cron: '*/20 * * * *'
   workflow_dispatch:
 
