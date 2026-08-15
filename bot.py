@@ -21,7 +21,7 @@ try:
 
   # Streamlit chat input box ko target karne ke liye
   input_box = driver.find_element(
-      By.CSS_SELECTOR, 'textarea[aria-label="Consult MediPulse AI..."]'
+      By.CSS_SELECTOR, 'textarea[placeholder="Consult MediPulse AI..."]'
   )
 
   print("Message type kiya ja raha hai...")
