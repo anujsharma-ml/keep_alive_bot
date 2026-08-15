@@ -29,7 +29,7 @@ jobs:
         run: |
           python bot.py
 
-        - name: Upload screenshot on failure
+      - name: Upload screenshot on failure
         uses: actions/upload-artifact@v3
         if: failure()
         with:
