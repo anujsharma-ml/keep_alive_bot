@@ -28,3 +28,10 @@ jobs:
       - name: Run bot script
         run: |
           python bot.py
+
+        - name: Upload screenshot on failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: error-screenshot
+          path: streamlit_error.png
