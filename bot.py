@@ -17,35 +17,43 @@ chrome_options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=chrome_options)
 
 try:
-    print("App khul raha hai...")
+    print("App URL khola ja raha hai...")
     driver.get(STREAMLIT_URL)
     
-    wait = WebDriverWait(driver, 45)
+    wait = WebDriverWait(driver, 30)
     
-    # Step 1: Streamlit Cloud ke iframe me switch karna zaroori hai
-    print("Streamlit Cloud iframe ko dhoonda ja raha hai...")
+    # STEP 1: Check for Streamlit "Wake up" / "Get this app back up" button
     try:
-        iframe = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "iframe")))
-        driver.switch_to.frame(iframe)
-        print("Successfully iframe ke andar switch ho gaye!")
-    except Exception as e:
-        print(f"Iframe nahi mila ya direct page hai: {e}")
-
-    # Step 2: Agar app sleep me hai toh wake-up button click karein
-    try:
-        wake_up_button = WebDriverWait(driver, 5).until(
+        print("Checking if app is sleeping / looking for wake-up button...")
+        # Streamlit ka specific wake-up button text ya xpath
+        wake_btn = WebDriverWait(driver, 8).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'back up') or contains(., 'Wake up') or contains(., 'Yes')]"))
         )
-        print("Wake-up button mil gaya, click kiya ja raha hai...")
-        wake_up_button.click()
-        time.sleep(15)
+        print("App sleep mode me tha! Wake-up button click kiya ja raha hai...")
+        wake_btn.click()
+        
+        # App ke uthne ke liye thoda lamba wait dena zaroori hai
+        print("App wake up hone ka 20 seconds wait ho raha hai...")
+        time.sleep(20)
     except Exception:
-        print("Koi wake-up button nahi mila.")
+        print("Koi wake-up button nahi mila, app shayad pehle se active hai.")
 
-    # Step 3: Chat input box ko dhoondna (Ab ye iframe ke andar asani se mil jayega)
+    # STEP 2: Streamlit Cloud ke main container ya iframe me switch karna
+    print("Streamlit container load hone ka wait kiya ja raha hai...")
+    try:
+        # Check if wrapped in iframe
+        iframe = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "iframe"))
+        )
+        driver.switch_to.frame(iframe)
+        print("Iframe ke andar switch ho gaye.")
+    except Exception:
+        print("Koi iframe nahi hai, direct page par hain.")
+
+    # STEP 3: Chat input box ko dhoondhna aur message type karna
     print("Chat input box ko dhoonda ja raha hai...")
     input_box = wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea'))
+        EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-testid="stChatInput"] textarea, textarea'))
     )
 
     print("Message type kiya ja raha hai...")
@@ -55,12 +63,12 @@ try:
 
     # Response process hone ke liye wait
     time.sleep(10)
-    print("Activity successful! Chat box me message bhej diya gaya hai.")
+    print("Activity successful! Message successfully bhej diya gaya hai aur app active ho gaya hai.")
 
 except Exception as e:
     print(f"Error aa gaya: {e}")
     driver.save_screenshot("streamlit_error.png")
-    print("Screenshot 'streamlit_error.png' save ho gaya hai.")
+    print("Screenshot 'streamlit_error.png' save kar diya gaya hai.")
     raise e
 
 finally:
