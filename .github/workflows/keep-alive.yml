@@ -1,0 +1,30 @@
+name: Keep Streamlit Alive
+
+on:
+  schedule:
+    # Yeh har 20 minute mein chalega
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install selenium webdriver-manager
+          # Chrome driver ke liye zaroori libraries
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Run bot script
+        run: |
+          python bot.py
