@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # URLs for both apps
 RAG_URL = "https://diabetesbpairagpipeline-egnh5crjjtbher5eczhmwx.streamlit.app/"
 CAR_URL = (
-    "YOUR_CAR_PRICE_STREAMLIT_URL_HERE"  # <-- Replace with your Car Price app link
+    "https://endtoendcarpricepredictionpipeline-rb8enhmfsdb352bflp3n7r.streamlit.app/"  # <-- Replace with your Car Price app link
 )
 
 chrome_options = Options()
