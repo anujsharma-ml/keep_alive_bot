@@ -6,10 +6,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Dono apps ke URLs
+# URLs for both apps
 RAG_URL = "https://diabetesbpairagpipeline-egnh5crjjtbher5eczhmwx.streamlit.app/"
 CAR_URL = (
-    "https://endtoendcarpricepredictionpipeline-rb8enhmfsdb352bflp3n7r.streamlit.app/"  # <-- Yahan apni car price app ka link daal dena
+    "YOUR_CAR_PRICE_STREAMLIT_URL_HERE"  # <-- Replace with your Car Price app link
 )
 
 chrome_options = Options()
@@ -38,17 +38,13 @@ def wake_up_app_if_needed(url, app_name):
         ))
     )
     print(
-        f"[{app_name}] App sleep mode me tha! Wake-up button click kiya ja"
-        " raha hai..."
+        f"[{app_name}] App was in sleep mode! Clicking wake-up button..."
     )
     wake_btn.click()
-    print(f"[{app_name}] App wake up hone ka 20 seconds wait ho raha hai...")
+    print(f"[{app_name}] Waiting 20 seconds for the app to wake up...")
     time.sleep(20)
   except Exception:
-    print(
-        f"[{app_name}] Koi wake-up button nahi mila, app shayad pehle se active"
-        " hai."
-    )
+    print(f"[{app_name}] No wake-up button found, app is likely already active.")
 
   # Check if wrapped in iframe
   try:
@@ -56,10 +52,10 @@ def wake_up_app_if_needed(url, app_name):
         EC.presence_of_element_located((By.TAG_NAME, "iframe"))
     )
     driver.switch_to.frame(iframe)
-    print(f"[{app_name}] Iframe ke andar switch ho gaye.")
+    print(f"[{app_name}] Switched inside iframe.")
   except Exception:
     driver.switch_to.default_content()
-    print(f"[{app_name}] Koi iframe nahi hai, direct page par hain.")
+    print(f"[{app_name}] No iframe found, on direct page.")
 
 
 # ==========================================
@@ -68,28 +64,27 @@ def wake_up_app_if_needed(url, app_name):
 try:
   wake_up_app_if_needed(RAG_URL, "RAG Bot")
 
-  print("[RAG Bot] Chat input box ko dhoonda ja raha hai...")
+  print("[RAG Bot] Searching for chat input box...")
   input_box = wait.until(
       EC.presence_of_element_located(
           (By.CSS_SELECTOR, 'div[data-testid="stChatInput"] textarea, textarea')
       )
   )
 
-  print("[RAG Bot] Message type kiya ja raha hai...")
+  print("[RAG Bot] Typing message and sending...")
   input_box.click()
   input_box.send_keys("Hello")
   input_box.send_keys(Keys.RETURN)
 
   time.sleep(10)
   print(
-      "[RAG Bot] SUCCESS: Message successfully bhej diya gaya hai aur app active"
-      " ho gaya hai."
+      "[RAG Bot] SUCCESS: Message sent successfully and app is now active."
   )
 
 except Exception as e:
-  print(f"[RAG Bot] ERROR: RAG Bot mein error aa gaya -> {e}")
+  print(f"[RAG Bot] ERROR: An error occurred in RAG Bot -> {e}")
   driver.save_screenshot("rag_error.png")
-  print("Screenshot 'rag_error.png' save kar diya gaya hai.")
+  print("Screenshot 'rag_error.png' saved successfully.")
 
 # ==========================================
 # PART 2: CAR PRICE PREDICTOR AUTOMATION
@@ -97,16 +92,10 @@ except Exception as e:
 try:
   wake_up_app_if_needed(CAR_URL, "Car Price App")
 
-  print("[Car Price App] Page load hone ka wait kiya ja raha hai...")
-  time.sleep(
-      5
-  )  # Extra pause taaki car app ke saare widgets/dropdowns properly render ho jayein
+  print("[Car Price App] Waiting for page components to load...")
+  time.sleep(5)  # Pause to ensure all car app widgets render properly
 
-  print(
-      "[Car Price App] 'Calculate Predicted Price' button ko dhoonda ja raha"
-      " hai..."
-  )
-  # Streamlit ke primary button ya text ke through button dhoondhna
+  print("[Car Price App] Searching for 'Calculate Predicted Price' button...")
   calc_btn = wait.until(
       EC.element_to_be_clickable((
           By.XPATH,
@@ -115,24 +104,20 @@ try:
       ))
   )
 
-  print(
-      "[Car Price App] Calculate button mil gaya, click kiya ja raha hai..."
-  )
-  driver.execute_script(
-      "arguments[0].scrollIntoView(true);", calc_btn
-  )  # Scroll to button
+  print("[Car Price App] Calculate button found, clicking...")
+  driver.execute_script("arguments[0].scrollIntoView(true);", calc_btn)
   calc_btn.click()
 
   time.sleep(10)
   print(
-      "[Car Price App] SUCCESS: Prediction button successfully click ho gaya"
-      " hai aur app active ho gaya hai."
+      "[Car Price App] SUCCESS: Prediction button clicked successfully and app"
+      " is now active."
   )
 
 except Exception as e:
-  print(f"[Car Price App] ERROR: Car Price App mein error aa gaya -> {e}")
+  print(f"[Car Price App] ERROR: An error occurred in Car Price App -> {e}")
   driver.save_screenshot("car_error.png")
-  print("Screenshot 'car_error.png' save kar diya gaya hai.")
+  print("Screenshot 'car_error.png' saved successfully.")
 
 finally:
   driver.quit()
