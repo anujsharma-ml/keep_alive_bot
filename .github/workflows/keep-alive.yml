@@ -27,9 +27,11 @@ jobs:
         run: |
           python bot.py
 
-      - name: Upload screenshot on failure
+      - name: Upload error screenshots on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: error-screenshot
-          path: streamlit_error.png
+          name: error-screenshots
+          path: |
+            rag_error.png
+            car_error.png
