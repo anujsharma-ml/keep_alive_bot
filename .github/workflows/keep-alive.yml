@@ -29,9 +29,8 @@ jobs:
 
       - name: Upload error screenshots on failure
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always() # Runs even if previous steps failed
         with:
           name: error-screenshots
-          path: |
-            rag_error.png
-            car_error.png
+          path: "*.png"
+          if-no-files-found: ignore
