@@ -27,9 +27,9 @@ jobs:
         run: |
           python bot.py
 
-      - name: Upload error screenshots on failure
+      - name: Upload error screenshots
         uses: actions/upload-artifact@v4
-        if: always() # Runs even if previous steps failed
+        if: always()
         with:
           name: error-screenshots
           path: "*.png"
